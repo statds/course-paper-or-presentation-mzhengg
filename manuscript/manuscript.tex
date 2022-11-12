@@ -1,0 +1,108 @@
+\documentclass[12pt, letterpaper, titlepage]{article}
+
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{amsthm}
+\usepackage{graphicx}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{colorlinks = true, linkcolor = blue, citecolor=blue, urlcolor = blue}
+\usepackage{natbib}
+\usepackage{enumitem}
+\usepackage{setspace}
+\usepackage{lipsum}
+
+\usepackage[pagewise]{lineno}
+%\linenumbers*[1]
+% %% patches to make lineno work better with amsmath
+\newcommand*\patchAmsMathEnvironmentForLineno[1]{%https://www.overleaf.com/project/634313f2f2e4439ea3a087af
+ \expandafter\let\csname old#1\expandafter\endcsname\csname #1\endcsname
+ \expandafter\let\csname oldend#1\expandafter\endcsname\csname end#1\endcsname
+ \renewenvironment{#1}%
+ {\linenomath\csname old#1\endcsname}%
+ {\csname oldend#1\endcsname\endlinenomath}}%
+\newcommand*\patchBothAmsMathEnvironmentsForLineno[1]{%
+ \patchAmsMathEnvironmentForLineno{#1}%
+ \patchAmsMathEnvironmentForLineno{#1*}}%
+
+\AtBeginDocument{%
+ \patchBothAmsMathEnvironmentsForLineno{equation}%
+ \patchBothAmsMathEnvironmentsForLineno{align}%
+ \patchBothAmsMathEnvironmentsForLineno{flalign}%
+ \patchBothAmsMathEnvironmentsForLineno{alignat}%
+ \patchBothAmsMathEnvironmentsForLineno{gather}%
+ \patchBothAmsMathEnvironmentsForLineno{multline}%
+}
+
+% control floats
+\renewcommand\floatpagefraction{.9}
+\renewcommand\topfraction{.9}
+\renewcommand\bottomfraction{.9}
+\renewcommand\textfraction{.1}
+\setcounter{totalnumber}{50}
+\setcounter{topnumber}{50}
+\setcounter{bottomnumber}{50}
+
+\newcommand{\jy}[1]{\textcolor{blue}{JY: #1}}
+\newcommand{\eds}[1]{\textcolor{red}{EDS: (#1)}}
+
+
+\title{Research Proposal}
+
+\author{Michael Zheng\\
+  Jun Yan\\[1ex]
+  Department of Statistics, University of Connecticut\\
+}
+\date{}
+
+\begin{document}
+\maketitle
+
+\doublespace
+
+\section{Introduction}
+\label{sec:intro}
+
+Reviews are an integral part of an Amazon customer's shopping experience. Products with good ratings and feedback are deemed to be more trustworthy and help increase sales. \citep{article} But, this review system is difficult to moderate and can be abused by sellers. With so much to gain and little to lose for vendors, it's important to detect fake reviews from genuine ones in order to make the Amazon marketplace fair. \citep{pendyala_2019}
+
+\section{Specific Aims}
+\label{sec:specific_aims}
+
+My objective is to investigate this question: given an Amazon review, is it fake or genuine? The answer to this is vital to upholding the integrity of Amazon's review system, which plays an integral role in assisting consumers on which products to trust and purchase, thereby affecting sales. \citep{article}
+
+\section{Data Description}
+\label{sec:data}
+
+The data that will be used for this paper contains 233.1 million reviews, 142.8 million of which are from 2014. The reviews were retrieved from May 1996 to October 2018. Each review consists of a rating, response, and the number of helpfulness votes. There is also product metadata consisting of descriptions, category information, price, brand, and image features that correspond to each review. This data was not collected by myself, it is available \href{https://nijianmo.github.io/amazon/index.html}{here}. \citep{ni_li_mcauley_2019}
+
+\section{Research Design / Methods / Schedule}
+\label{sec:methodology}
+
+For the rest of the semester, I plan on devoting 50\% of my time to writing the manuscript, another 40\% to training, testing, and fine-tuning my model, and 10\% to editing and peer-reviewing. The data processing and model building will be done in Python. At each step in the numbered list (below), I will document my process and write the relevant parts of the manuscript so that my paper accurately reflects my thoughts and processes.
+
+\begin{enumerate}
+  \item Explore the data
+  \item Process and clean data
+  \item Feature engineering
+  \item Build sentiment analysis model
+  \item Test the model
+  \item Fine-tune the model
+\end{enumerate}
+
+These methods will help me to develop an algorithm that can detect Amazon reviews as fake or genuine to a reasonable accuracy, allowing me to address the question proposed in section \ref{sec:specific_aims}
+
+\section{Discussion}
+\label{sec:discussion}
+
+I expect that using sentiment analysis to detect fake reviews will be challenging because vendors invest time and resources into generating hyper-realistic reviews so that they will not be detected. My research proposal is not unique, there are countless studies on this very topic. However, if this research is carried out diligently using the proposed data, I will be able to corroborate the existing results yielded from the same data by prior researchers. If my model proves to be reasonably accurate, it could potentially be adopted by Amazon to improve their review moderation process. However, if I do not get the results I expect, it means that my methodology is either flawed or not sophisticated enough to properly detect fake Amazon reviews.
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+I am proposing a sentiment analysis of Amazon reviews in order to develop a model that can detect if a given review is fake or genuine. This is important because vendors acting in bad faith may create fake positive reviews to promote their products or generate fake negative reviews to stifle their competition. My work aims to corroborate the findings of prior research papers on this topic. That is, to confirm that the use of machine learning to detect fake reviews is reasonably accurate and efficient.
+
+\bibliographystyle{chicago}
+\bibliography{references.bib}
+
+
+\end{document}
