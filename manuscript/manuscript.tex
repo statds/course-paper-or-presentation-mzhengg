@@ -1,10 +1,10 @@
-\documentclass[12pt, letterpaper, titlepage]{article}
+\documentclass[12pt]{article}
 
 \usepackage{amsmath}
 \usepackage{booktabs}
 \usepackage{amsthm}
 \usepackage{graphicx}
-\usepackage[margin=1in]{geometry}
+\usepackage[utf8]{inputenc}
 \usepackage{hyperref}
 \hypersetup{colorlinks = true, linkcolor = blue, citecolor=blue, urlcolor = blue}
 \usepackage{natbib}
@@ -16,40 +16,7 @@
 \usepackage{algpseudocode}
 \usepackage{tikz}
 
-\usepackage[pagewise]{lineno}
-%\linenumbers*[1]
-% %% patches to make lineno work better with amsmath
-\newcommand*\patchAmsMathEnvironmentForLineno[1]{%https://www.overleaf.com/project/634313f2f2e4439ea3a087af
- \expandafter\let\csname old#1\expandafter\endcsname\csname #1\endcsname
- \expandafter\let\csname oldend#1\expandafter\endcsname\csname end#1\endcsname
- \renewenvironment{#1}%
- {\linenomath\csname old#1\endcsname}%
- {\csname oldend#1\endcsname\endlinenomath}}%
-\newcommand*\patchBothAmsMathEnvironmentsForLineno[1]{%
- \patchAmsMathEnvironmentForLineno{#1}%
- \patchAmsMathEnvironmentForLineno{#1*}}%
-
-\AtBeginDocument{%
- \patchBothAmsMathEnvironmentsForLineno{equation}%
- \patchBothAmsMathEnvironmentsForLineno{align}%
- \patchBothAmsMathEnvironmentsForLineno{flalign}%
- \patchBothAmsMathEnvironmentsForLineno{alignat}%
- \patchBothAmsMathEnvironmentsForLineno{gather}%
- \patchBothAmsMathEnvironmentsForLineno{multline}%
-}
-
-% control floats
-\renewcommand\floatpagefraction{.9}
-\renewcommand\topfraction{.9}
-\renewcommand\bottomfraction{.9}
-\renewcommand\textfraction{.1}
-\setcounter{totalnumber}{50}
-\setcounter{topnumber}{50}
-\setcounter{bottomnumber}{50}
-
-\newcommand{\jy}[1]{\textcolor{blue}{JY: #1}}
-\newcommand{\eds}[1]{\textcolor{red}{EDS: (#1)}}
-
+\doublespacing
 
 \title{Fake Amazon reviews detection using natural language processing and supervised learning}
 
