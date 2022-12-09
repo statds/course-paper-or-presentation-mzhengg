@@ -1,7 +1,7 @@
 \documentclass[12pt]{article}
 
+\usepackage[margin=1in]{geometry}
 \usepackage{amsmath}
-\usepackage{booktabs}
 \usepackage{amsthm}
 \usepackage{graphicx}
 \usepackage[utf8]{inputenc}
@@ -16,8 +16,6 @@
 \usepackage{algpseudocode}
 \usepackage{tikz}
 
-\doublespacing
-
 \title{Fake Amazon reviews detection using natural language processing and supervised learning}
 
 \author{Michael Zheng\\
@@ -31,7 +29,7 @@
 \doublespace
 
 \begin{abstract}
-    Customer reviews play an important role of influencing one's purchase decision. Consumers trust the reputation of the brand or product based on reviews, while sellers are interested in making sales. Positive reviews can increase sales, and vice versa. Thus, sellers can, and often do, abuse the review system for their own gain. This paper seeks to develop a support vector machine model to accurately detect fake Amazon reviews using natural language processing techniques.
+    Customer reviews play an important role of influencing one's purchase decision. Consumers trust the reputation of the brand or product based on reviews, while sellers are interested in making sales. Positive reviews can increase sales, and negative reviews can hamper sales. Thus, sellers can, and often do, abuse the review system for their own gain. They can do this by generating artificial positive reviews for themselves to bolster their brand's reputation or negative reviews for their competitors to reduce their competitor's sales. This paper seeks to develop a support vector machine model to accurately detect these artificially created Amazon reviews using natural language processing techniques. The paper also investigates other ways in which malicious reviews can exist, such as vendors encouraging their customers to write positive reviews for them in exchange for money or goods. Finally, the approach taken in this paper is very simple and more complex methods that yield higher detection accuracy already exist in the literature. This paper only seeks to corroborate the idea that supervised learning is an effective technique to classify fake reviews. The paper ends with an explanation of the limitations of the study and potential future works.
     
 \bigskip
 \noindent{\sc Keywords}:
@@ -95,6 +93,8 @@ The dataset contains features and corresponding labels for training and testing 
 \bigskip
 \bigskip
 
+\caption{Figure: The 'variable' column shows the names of all the variables that are in the dataset. The 'Data Type' column shows the data type of each variable in the dataset. Note that 'Int' means integer and 'Str' means string. The 'Instance' column shows an example of what a data point for that column would look like. The 'Purpose' column shows the importance of each variable to the machine learning step.}
+
 The data was explored and visualized using the pandas library in Python. Specifically, each variable was grouped by the label, which is a 0 if the review is real and a 1 if the review is fake, to assess the frequency of the values of each variable in the fake and real reviews. This provided information about which products were over or under-represented so that the dataset could be balanced to avoid bias to the majority classes.
 
 \section{Methods}
@@ -119,9 +119,14 @@ Original Sentence & Stop Words & Lemmatization & Bigrams \\
 \end{center}
 
 \bigskip
+
+\caption{Figure: This figure showcases an example of how the natural language processing techniques used in this study works. Suppose an Amazon review reads as follows: I like playing with cats. The words I, like, and with are commonly used in English sentences. They are called stop words and contain no important information about the sentiment of the review. The algorithm will remove these words. The most meaningful words playing and cat remain. But we want to ensure that these words are in their base form so that they can convey the most information to the machine learning algorithms that we feed them into. Thus, playing becomes play and cat stays as cat, since its already in its base form. Finally, we find words that commonly go together with play and cat and generate what we call, bigrams. The word game is commonly used with play and the word cute is commonly used with cat.}
+
 \bigskip
 
-Features that are irrelevant to detecting fake reviews were removed. The features that were kept included the rating, verified purchase status, product category, and review. These features were stored in a feature vector for each observation alongside its corresponding label. This was done to numerically quantify the contents of the categorical variables so that the SVM model, which requires numerical input features, can use them to make predictions. A simple feature vectorization approach was utilized for the purposes of this paper. 
+Several models were attempted using different feature vectorization approaches and natural language processing techniques in an attempt to find the best performing model. For instance, in one approach, all the features were included and a SVM model was trained. But the performance was poor at approximately 47$\%$ accuracy, which is worse than randomly guessing. This was most likely due to extra noise being generated from the Product-ID feature, which conveys no information about fake reviews. Since it is simply an ID used to uniquely identify each product, the feature distracted the SVM model from properly defining the classification boundary.
+
+Features that were deemed to irrelevant to detecting fake reviews were removed, such as Doc-ID, Label, Product-ID, Product-title, and Review-title. The features that were kept included the rating, verified purchase status, product category, and review. These features were stored in a feature vector for each observation alongside its corresponding label. This was done to numerically quantify the contents of the categorical variables so that the SVM model, which requires numerical input features, can use them to make predictions. A simple feature vectorization approach was utilized for the purposes of this paper. 
 
 \bigskip
 
@@ -163,6 +168,8 @@ Features that are irrelevant to detecting fake reviews were removed. The feature
 
 \end{algorithmic}
 \end{algorithm}
+
+\caption{Figure: The feature vectorization algorithm takes an input vector X that contains 4 features: rating, verified-purchase, product-category, and review. The idea is to convert any non-integer type variable into a numerical value so that the machine learning algorithm can make sense of it. The rating ranges from 1 to 5 and contains good information by itself. If the rating is 1, we know the customer had a bad experience. Otherwise, the experience becomes increasingly better as it approaches 5, with 5 being the best. The verified-purchase variable is a binary variable with the values "Yes" and "No". Thus, we can represent "Yes" with a value of 1 and "No" with a value of 0. The product-category, on the other hand, is slightly different. If the product category has not been seen before by the algorithm, then a value of 1 is assigned to it. Otherwise, for each occurrence of this product-category, we add 1 to the current value and assign that new value to product category. (For example, if a product category currently has a value of 5 and in the given feature vector it occurs again, then the value of the product category will be 6). This ensures that their is an understandable importance of product categories by the SVM model. That is, a product category with a higher value is emphasized since it occurs more frequently. We approach the review text in a similar fashion. The value assigned to each word is initially 0 and incremented by 1 every time it occurs again. This is to, once again, emphasize the importance of frequency.}
 
 The data was then split into a test and training set based on a proportion $p$, which is the proportion of data from the 6,186 data points to devote to the training set. For the results generated in this paper, 80\% of the data was randomly assigned to the training set and the rest were used as a test set \citep{bell_2020}. The proportion $p$, which is the size of the training set, was arbitrarily chosen to be greater than the size of the testing set $(1-p)$ to ensure that the SVM model is trained on as much data as possible to find and learn meaningful patterns. It is widely accepted for training data to be larger than testing data. An inadequate amount of training data can result in a poor performing model that underfits and does not generalize to new instances well.
 
@@ -248,14 +255,23 @@ font=\sffamily]
  \end{scope}
 \end{tikzpicture}
 
+\bigskip
+
+\caption{Figure: We begin with a dataset that we devote 80$\%$ to a training set and 20$\%$ to a test set. The data are pre-processed by removing irrelevant features, applying natural language processing techniques, and utilizing feature vectorization. The training set is then fed into an SVM model through the scikit-learn, Python library. The model is trained on that data and is used to make predictions about the test set. We then compare the predictions to the true labels and calculate several evaluation metrics to assess the performance of the model.}
+
+\bigskip
+
+It is common practice to devote a chunk of the dataset to a validation set for a total of 3 sets: training set, validation set, and test set. This is useful for hyper-parameter optimization because when you fine-tune the hyper-parameters to get better model performance you don't want to overfit it to the test set. Otherwise, the evaluation metrics calculated will not accurately assess the generalizability of the model. Instead, we want to fine-tune the hyper-parameters of the model to perform well on the validation set. Then, if we are happy with the validation performance, we can evaluate the model's performance on the test set to gain insights about the generalization performance of the model. A validation set was not utilized in this study, but it is certainly something to look into in the future.
+
 \section{Results}
 \label{sec:results}
 
-In this section, the results from the SVM model to classify fake and real Amazon reviews from the Kaggle dataset are presented. Accuracy, recall, and precision are common metrics to evaluate the performance of a classification model. They can be calculated using the information in a confusion matrix, which is a 2x2 matrix where each row represents a review that is actually fake or real and each column represents a review that is predicted to be fake or real.
+In this section, the results from the SVM model to classify fake and real Amazon reviews from the Kaggle dataset are presented. Accuracy, recall, and precision are common metrics to evaluate the performance of a classification model. Accuracy is "the degree of closeness between a measurement and its true value" \citep{admin_2022}. Precision is the "fraction of relevant instances among the retrieved instances" \citep{wikipedia_2022}. Recall is the "fraction of relevant instances that were retrieved" \citep{wikipedia_2022}. They can be calculated using the information in a confusion matrix, which is a 2x2 matrix where each row represents a review that is actually fake or real and each column represents a review that is predicted to be fake or real.
 
 \bigskip
 \bigskip
 
+\scalebox{1.1}{%
 \begin{tabular}{l|l|c|c|c}
 \multicolumn{2}{c}{}&\multicolumn{2}{c}{Predicted Reviews}&\\
 \cline{3-4}
@@ -266,21 +282,51 @@ In this section, the results from the SVM model to classify fake and real Amazon
 & Real & $56$ & $254$ & $310$\\
 \cline{2-4}
 \multicolumn{1}{c}{} & \multicolumn{1}{c}{Total} & \multicolumn{1}{c}{$773$} & \multicolumn{    1}{c}{$465$} & \multicolumn{1}{c}{$1238$}\\
-\end{tabular}
+\end{tabular}}
 
 \bigskip
+
+\caption{Figure: This is a 2 dimensional confusion matrix visualizing the performance of the supervised SVM model's classification of fake Amazon reviews. The first row represents reviews that are actually fake reviews. The second row represents reviews that are actually real reviews. The first column represents reviews that are predicted to be fake. The second column represents reviews that are predicted to be real.}
+
 \bigskip
 
 \begin{itemize}
   \item True positives (TP) = predicted fake reviews $\cap$ actual fake reviews
+  \begin{itemize}
+    \item{The true positive value tells us the number of instances where the model properly predicts a review to be fake.}
+  \end{itemize}
   \item True negatives (TN) = predicted real reviews $\cap$ actual real reviews
+  \begin{itemize}
+    \item{The true negative value tells us the number of instances where the model properly predicts a review to be real.}
+  \end{itemize}
   \item False positives (FP) = predicted fake reviews $\cap$ actual real reviews
+  \begin{itemize}
+    \item{The false positive value tells us the number of instances where the model incorrectly predicts a review to be fake when it is actually real.}
+  \end{itemize}
   \item False negatives (FN) = predicted real reviews $\cap$ actual fake reviews
+    \begin{itemize}
+    \item{The false negative value tells us the number of instances where the model incorrectly predicts a review to be real when it is actually fake.}
+  \end{itemize}
   \item Positives (P) = total amount of actual fake reviews
+    \begin{itemize}
+    \item{The positive value tells us the number of actual fake reviews.}
+  \end{itemize}
   \item Negatives (N) = total amount of actual real reviews
+  \begin{itemize}
+    \item{The negative value tells us the number of actual real reviews.}
+  \end{itemize}
   \item Accuracy = (TP + TN) / (P + N)
+    \begin{itemize}
+    \item{Accuracy, as defined earlier, can be obtained by dividing the sum of true positives and true negatives by the sum of positives and negatives}
+  \end{itemize}
   \item Precision = (TP) / (TP + FP)
+  \begin{itemize}
+    \item{Precision, as defined earlier, can be obtained by dividing the number of true positives by the sum of true positives and false positives}
+  \end{itemize}
   \item Recall = (TP) / (TP + FN)
+  \begin{itemize}
+    \item{Recall, as defined earlier, can be obtained by dividing the number of true positives by the sum of true positives and false negatives}
+  \end{itemize}
 \end{itemize}
 
 Accuracy is defined as the degree to which the model classifies all the reviews properly. In this case, the model classified 78.4$\%$ of the reviews in the test set properly. 
@@ -310,6 +356,8 @@ This study did not create any new features from the existing features, which may
 Hyper-parameter tuning was also not utilized in this study, which may benefit generalization performance. Hyper-parameters are parameters that control the learning process of a machine learning model. For instance, defining the proper loss function ensures that we are measuring the correct metric in order to assess performance. It is imperative to find the optimal set of hyper-parameters in order to maximize model performance
 
 Furthermore, the dataset used to train the SVM model in this paper is small (n = 6,186). The key to getting better, more robust performance is using a dataset that is balanced and sufficiently large (n = 40,000) \citep{Salminen2022}. This ensures that the model can discover the underlying trends and patterns of the data and make better class separation. Additionally, the techniques used to generate fake reviews vary over time as perpetrators and moderators engage in a game of cat and mouse. Thus, testing on a data that spans a longer time frame is crucial to not over-fitting the model to a specific interval of time. That is, by exposing the model to numerous fake review generation types, the model could learn trends, blind to the human eye, that are vital to detecting fake reviews, irrespective of time. A high performing, robust model for detecting fake reviews is important to ensuring an honest and trustworthy Amazon marketplace.
+
+Ultimately, with the continued advancements in supervised learning techniques, there will be a future where reviews will no longer need to be manually vetted. Every review will be automatically processed by these models upon submission and only the genuine ones will be published, to a high degree of accuracy. Furthermore, with the growth of e-commerce, or online retail, the applications of these models should be extended beyond Amazon to other online shopping outlets, like eBay. Going forward, the largest hurdle to detecting fake reviews will not be in the realm of machine learning. It will be obtaining high-quality, labeled data sets to train models with. As it currently stands, obtaining these data sets is manual in nature and costly in terms of time and money. However, its important to put this into context. Researchers looking to study this topic may find it difficult to access good datasets. But the companies behind these online retail sites have troves of data that can be used for this purpose. It's also in their interest to keep their marketplace fair and clean of bad actors to maintain their reputation as a legitimate site to conduct business. Despite these difficulties, this study is a step forward into this future.
 
 \bibliographystyle{chicago}
 \bibliography{references.bib}
